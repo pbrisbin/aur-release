@@ -1,0 +1,24 @@
+#!/bin/sh
+pkgbuild() {
+  cat << EOF
+pkgname=fake
+pkgver=4.5.6
+pkgrel=3
+pkgdesc=''
+arch=('any')
+source=("source.txt")
+md5sums=('SKIP')
+EOF
+}
+
+printf "git %s\n" "$*"
+
+case "$1" in
+  tag) ;;
+  push) ;;
+  clone)
+    mkdir -p "$3"
+    pkgbuild > "$3/PKGBUILD"
+    touch "$3/source.txt"
+    ;;
+esac
