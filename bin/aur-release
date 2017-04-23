@@ -9,6 +9,7 @@ fi
 # support "v1.2.3" for releasing 1.2.3
 version=$(echo "$1" | sed 's/^v//')
 package=${2:-$(basename "$PWD")}
+src_repo=$PWD
 tmp_repo=$(mktemp -d)/$package
 
 printf "Releasing %s-%s...\n" "$package" "$version"
@@ -24,6 +25,11 @@ git clone "ssh://aur@aur.archlinux.org/$package" "$tmp_repo"
 
 (
   cd "$tmp_repo"
+
+  if [ ! -f PKGBUILD ]; then
+    echo "No PKGBUILD present. Using source repository's..."
+    cp -v "$src_repo"/PKGBUILD .
+  fi
 
   sed -i "
     s/^pkgver=.*$/pkgver=$version/; s/=v/=/;
