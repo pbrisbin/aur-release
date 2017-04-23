@@ -1,6 +1,7 @@
 ## [Unreleased](https://github.com/pbrisbin/aur-release/compare/v0.0.1...master)
 
-- None
+- [NEW] Change usage, to support arbitrary file additions
+- [NEW] Proper `--help`
 
 ## [v0.0.1](https://github.com/pbrisbin/aur-release/compare/v0.0.0...v0.0.1)
 
