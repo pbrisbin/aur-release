@@ -1,7 +1,7 @@
 NAME = aur-release
 PREFIX ?= /usr/local
 
-VERSION = 0.0.0
+VERSION = 0.0.1
 
 test:
 	cram test
