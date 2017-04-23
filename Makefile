@@ -1,6 +1,8 @@
 NAME = aur-release
 PREFIX ?= /usr/local
 
+VERSION = 0.0.0
+
 test:
 	cram test
 
@@ -15,4 +17,8 @@ distcheck:
 	$(RM) -rf aur-release
 	$(RM) -rf aur-release-*.pkg.tar.xz
 
-.PHONY: test install uninstall distcheck
+release: distcheck
+	./bin/aur-release v$(VERSION) aur-release-git
+
+
+.PHONY: test install uninstall distcheck release
