@@ -27,7 +27,7 @@ name=${2:-$(basename "$PWD")}; shift
 src_repo=$PWD
 tmp_repo=$(mktemp -d)/$name
 
-printf "Releasing %s-%s...\n" "$name" "$version"
+printf "Releasing %s as %s-%s...\n" "$src_repo" "$name" "$version"
 
 if git tag | grep -Fxq "v$version"; then
   echo "tag v$version exists"
