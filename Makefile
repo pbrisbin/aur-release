@@ -1,7 +1,7 @@
 NAME = aur-release
 PREFIX ?= /usr/local
 
-VERSION = 0.0.1
+VERSION = 1.0.0
 
 .PHONY: test
 test:
