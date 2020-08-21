@@ -1,63 +1,119 @@
 #!/bin/sh
 set -e
 
-if [ -z "$1" -o "$1" = "-h" -o "$1" = "--help" ]; then
-  cat >&2 <<EOM
-Usage: aur-release VERSION [NAME] [FILE, ...]
-Tag and release an AUR package.
+usage() {
+  echo "TODO"
+}
 
-  NAME          Name of the package, defaults to the basename of the current
-                working directory.
+clone_aur() {
+  name=$1
+  aur_repo=ssh://aur@aur.archlinux.org/$name
 
-  VERSION       Version to release as; can be v1.2.3 or 1.2.3, the released
-                package will always drop any leading "v" and the created git
-                tags will always add it.
+  tmp=$(mktemp -d)
+  trap 'rm -rf $tmp' EXIT
 
-  FILE, ...     Files to copy into the AUR repository before releasing. This is
-                most useful for an initial release. In such a case, don't forget
-                to include the PKGBUILD itself. Files must be specified as
-                relative to the project.
+  git clone "$aur_repo" "$tmp"
+  cd "$tmp"
+}
 
-EOM
-  exit 64
-fi
+create_aur_if_necessary() {
+  name=$1
+  aur_repo=ssh://aur@aur.archlinux.org/$name
 
-version=$(echo "$1" | sed 's/^v//')
-shift
-name=${1:-$(basename "$PWD")}
-shift
-src_repo=$PWD
-tmp_repo=$(mktemp -d)/$name
+  if ! git remote -v | grep -Fq aur.archlinux.org; then
+    git remote add aur "$aur_repo"
+    git fetch aur
+    git branch --set-upstream-to=aur/master
+  fi
+}
 
-printf "Releasing %s as %s-%s...\n" "$src_repo" "$name" "$version"
+update_pkgbuild_version() {
+  version=$1
+  version=${version#v} # strip v if present
+  sed -i "s/^pkgver=.*$/pkgver=$version/" PKGBUILD
+  sed -i "s/^pkgrel=.*$/pkgrel=1/" PKGBUILD
+}
 
-if git tag | grep -Fxq "v$version"; then
-  echo "tag v$version exists"
+launch_editor() {
+  cmd=$1
+
+  if ! "$cmd"; then
+    echo "$cmd returned non-zero" >&2
+    exit 1
+  fi
+}
+
+edit=0
+confirm=1
+cmd=$SHELL
+install=1
+
+while getopts heyC:n opt; do
+  case "$opt" in
+    h)
+      usage
+      exit 0
+      ;;
+    e) edit=1 ;;
+    y) confirm=0 ;;
+    C) cmd=$OPTARG ;;
+    n) install=0 ;;
+    [?])
+      usage >&2
+      exit 64
+      ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+name=$1
+version=$2
+
+if [ -n "$name" ]; then
+  echo "Releasing ${version:-new version} in AUR repository for $name"
+  clone_aur "$name"
+
+  if [ -n "$version" ]; then
+    echo "Setting PKGBUILD version to $version"
+    update_pkgbuild_version "$version"
+  fi
+
+  if [ -z "$version" ] || [ "$edit" -eq 1 ]; then
+    echo "Launching $cmd in AUR package repo"
+    launch_editor "$cmd"
+  fi
 else
-  git tag -s -m "v$version" "v$version"
-  git push --tags
+  name="$(basename "$PWD")"
+  echo "Releasing this directory as an AUR repository for $name"
+  create_aur_if_necessary "$name"
+
+  if [ "$edit" -eq 1 ]; then
+    echo "Launching $cmd in AUR package repo"
+    launch_editor "$cmd"
+  fi
 fi
 
-git clone "ssh://aur@aur.archlinux.org/$name" "$tmp_repo"
+updpkgsums
+makepkg --printsrcinfo >.SRCINFO
 
-(
-  cd "$tmp_repo"
+if [ "$install" -eq 1 ]; then
+  echo "Performing test installation..."
+  makepkg --syncdeps --install --force
+fi
 
-  for file; do
-    cp -v "$src_repo/$file" .
-    git add "$file"
-  done
+git add .SRCINFO PKGBUILD
+git diff --cached
 
-  sed -i "
-    s/^pkgver=.*$/pkgver=$version/; s/=v/=/;
-    s/^pkgrel=.*$/pkgrel=1/;" PKGBUILD
+if [ "$confirm" -eq 1 ]; then
+  printf "Continue? [y/n] "
+  read -r ans
+  [ "$ans" != y ] && exit 1
+fi
 
-  updpkgsums
-  makepkg --printsrcinfo >.SRCINFO
-
-  git add .SRCINFO PKGBUILD
+if [ -n "$version" ]; then
   git commit -m "Release v$version"
-  git push
-)
+else
+  git commit
+fi
 
-rm -rf "$tmp_repo"
+git push

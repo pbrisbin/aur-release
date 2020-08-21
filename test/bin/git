@@ -1,6 +1,6 @@
 #!/bin/sh
 pkgbuild() {
-  cat << EOF
+  cat <<EOF
 pkgname=fake
 pkgver=4.5.6
 pkgrel=3
@@ -18,7 +18,6 @@ case "$1" in
   push) ;;
   clone)
     mkdir -p "$3"
-    pkgbuild > "$3/PKGBUILD"
-    touch "$3/source.txt"
+    write-package "$3"
     ;;
 esac
