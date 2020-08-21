@@ -10,7 +10,8 @@ Options:
   -c COMMAND    Command to run when version is not given (or -e is passed).
                 Default is $SHELL.
   -d            Treat the current directory as the AUR repository, and do not
-                operate in a temporary clone.
+                operate in a temporary clone. This will create a branch called
+                aur tracking the remote aur/master branch.
   -e            Edit (via -c), even if version was given.
   -y            Yes, push to the remote -- don't require confirmation.
   -n            No test installation.
@@ -40,6 +41,8 @@ create_aur_remote_if_necessary() {
   if ! git remote -v | grep -Fq aur.archlinux.org; then
     git remote add aur "$aur_repo"
     git fetch aur
+    git checkout -b aur
+    git reset --hard aur/master
     git branch --set-upstream-to=aur/master
   fi
 }

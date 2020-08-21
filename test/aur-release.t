@@ -53,6 +53,8 @@ It releases the current directory with name and version
   Releasing in this directory
   git remote add aur ssh://aur@aur.archlinux.org/foo-git
   git fetch aur
+  git checkout -b aur
+  git reset --hard aur/master
   git branch --set-upstream-to=aur/master
   Launching write-package in AUR package repo
   Setting PKGBUILD version to v1.2.3
@@ -71,6 +73,8 @@ It releases the current directory with only name
   Releasing in this directory
   git remote add aur ssh://aur@aur.archlinux.org/foo-git
   git fetch aur
+  git checkout -b aur
+  git reset --hard aur/master
   git branch --set-upstream-to=aur/master
   Launching write-package in AUR package repo
   ==> Retrieving sources...
@@ -88,6 +92,8 @@ It releases the current directory without name or version
   Releasing in this directory
   git remote add aur ssh://aur@aur.archlinux.org/aur-release.t
   git fetch aur
+  git checkout -b aur
+  git reset --hard aur/master
   git branch --set-upstream-to=aur/master
   Launching write-package in AUR package repo
   ==> Retrieving sources...
@@ -115,6 +121,8 @@ It exits if the command fails in the current directory
   Releasing in this directory
   git remote add aur ssh://aur@aur.archlinux.org/package
   git fetch aur
+  git checkout -b aur
+  git reset --hard aur/master
   git branch --set-upstream-to=aur/master
   Launching false in AUR package repo
   false returned non-zero
