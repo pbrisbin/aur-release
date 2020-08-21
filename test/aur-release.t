@@ -3,7 +3,7 @@
 It tags with version if needed
 
   $ aur-release v1.2.3 package
-  Releasing package-1.2.3...
+  Releasing /tmp/* as package-1.2.3... (glob)
   git tag -s -m v1.2.3 v1.2.3
   git push --tags
   git clone ssh://aur@aur.archlinux.org/package /tmp/*/package (glob)
