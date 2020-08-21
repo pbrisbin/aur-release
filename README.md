@@ -1,6 +1,6 @@
 # AUR-release
 
-Tag and release an [AUR][] package.
+Release an [AUR][] package, by updating or creating its AUR repository.
 
 [aur]: https://wiki.archlinux.org/index.php/Arch_User_Repository#Sharing_and_maintaining_packages
 
@@ -10,21 +10,26 @@ Install `aur-release-git` from the AUR, of course.
 
 ## Usage
 
-```
-Usage: release VERSION [NAME] [FILE, ...]
-Tag and release an AUR package.
+```console
+% aur-release -h
+Usage: aur-release [-c COMMAND] [-deyn] [NAME [VERSION]]
+Release an AUR package by updating or creating its AUR repository.
 
-  NAME          Name of the package, defaults to the basename of the current
-                working directory.
+Options:
+  -c COMMAND    Command to run when version is not given (or -e is passed).
+                Default is $SHELL.
+  -d            Treat the current directory as the AUR repository, and do not
+                operate in a temporary clone.
+  -e            Edit (via -c), even if version was given.
+  -y            Yes, push to the remote -- don't require confirmation.
+  -n            No test installation.
 
-  VERSION       Version to release as; can be v1.2.3 or 1.2.3, the released
-                package will always drop any leading "v" and the created git
-                tags will always add it.
+Arguments:
+  NAME          Name of the AUR repository. Defaults to the basename of the
+                current working directory.
+  VERSION       Version to set in PKGBUILD (along with pkgrel=1). Default is
+                empty (you are expected to adjust version manually).
 
-  FILE, ...     Files to copy into the AUR repository before releasing. This is
-                most useful for an initial release. In such a case, don't forget
-                to include the PKGBUILD itself. Files must be specified as
-                relative to the project.
 ```
 
 ---
