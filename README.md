@@ -8,6 +8,8 @@ Release an [AUR][] package, by updating or creating its AUR repository.
 
 Install `aur-release-git` from the AUR, of course.
 
+Alternatively, `make install.local` will install the script at `~/.local/bin`.
+
 ## Usage
 
 ```console
@@ -31,6 +33,22 @@ Arguments:
                 empty (you are expected to adjust version manually).
 
 ```
+
+## Tests
+
+
+```
+make test
+```
+
+Tests use [cram][].
+
+[cram]: https://bitheap.org/cram/
+
+## Release
+
+This is a `-git` `PKGBUILD`, so there's no need to release unless changing the
+`PKGBUILD` itself. In which case, `make release` does that -- using itself.
 
 ---
 
