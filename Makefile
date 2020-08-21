@@ -19,7 +19,7 @@ uninstall:
 distcheck:
 	makepkg --clean --install
 	$(RM) -rf aur-release
-	$(RM) -rf aur-release-*.pkg.tar.xz
+	$(RM) -rf aur-release-*.pkg.tar.zst
 
 .PHONY: release
 release: distcheck
