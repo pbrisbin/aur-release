@@ -22,8 +22,10 @@ EOM
   exit 64
 fi
 
-version=$(echo "$1" | sed 's/^v//'); shift
-name=${2:-$(basename "$PWD")}; shift
+version=$(echo "$1" | sed 's/^v//')
+shift
+name=${2:-$(basename "$PWD")}
+shift
 src_repo=$PWD
 tmp_repo=$(mktemp -d)/$name
 
