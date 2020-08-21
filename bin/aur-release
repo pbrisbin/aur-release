@@ -53,7 +53,7 @@ git clone "ssh://aur@aur.archlinux.org/$name" "$tmp_repo"
     s/^pkgrel=.*$/pkgrel=1/;" PKGBUILD
 
   updpkgsums
-  mksrcinfo
+  makepkg --printsrcinfo >.SRCINFO
 
   git add .SRCINFO PKGBUILD
   git commit -m "Release v$version"
