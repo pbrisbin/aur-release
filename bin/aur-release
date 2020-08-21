@@ -73,7 +73,7 @@ update_pkgbuild_version() {
 launch_edit_command() {
   cmd=$1
 
-  if ! "$cmd"; then
+  if ! $cmd; then
     echo "$cmd returned non-zero" >&2
     exit 1
   fi
