@@ -14,7 +14,8 @@ It releases a separate AUR package repo with name and version
   git add .SRCINFO PKGBUILD
   git diff --cached
   git commit -m Release v1.2.3
-  git push
+  git push aur aur:master
+  git checkout master
 
 It releases a separate AUR package repo with only name
 
@@ -29,7 +30,8 @@ It releases a separate AUR package repo with only name
   git add .SRCINFO PKGBUILD
   git diff --cached
   git commit
-  git push
+  git push aur aur:master
+  git checkout master
 
 It releases a separate AUR package without name or version
 
@@ -44,7 +46,8 @@ It releases a separate AUR package without name or version
   git add .SRCINFO PKGBUILD
   git diff --cached
   git commit
-  git push
+  git push aur aur:master
+  git checkout master
 
 It releases the current directory with name and version
 

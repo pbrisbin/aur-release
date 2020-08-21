@@ -144,4 +144,9 @@ else
   git commit
 fi
 
-git push
+if [ "$separate" -eq 1 ]; then
+  git push aur aur:master
+  git checkout master
+else
+  git push
+fi
