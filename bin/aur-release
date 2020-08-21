@@ -24,7 +24,7 @@ fi
 
 version=$(echo "$1" | sed 's/^v//')
 shift
-name=${2:-$(basename "$PWD")}
+name=${1:-$(basename "$PWD")}
 shift
 src_repo=$PWD
 tmp_repo=$(mktemp -d)/$name
