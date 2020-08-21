@@ -145,8 +145,8 @@ else
 fi
 
 if [ "$separate" -eq 1 ]; then
+  git push
+else
   git push aur aur:master
   git checkout master
-else
-  git push
 fi
