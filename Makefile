@@ -23,7 +23,11 @@ distcheck:
 
 .PHONY: release
 release: distcheck
-	./bin/aur-release -d aur-release-git v$(VERSION)
+	./bin/aur-release \
+	  -c 'git checkout master -- PKGBUILD' \
+	  -d \
+	  -n \
+	  aur-release-git v$(VERSION)
 
 .PHONY: install.local
 install.local: PREFIX=$(HOME)/.local
