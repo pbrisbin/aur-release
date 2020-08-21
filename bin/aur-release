@@ -6,24 +6,38 @@ usage() {
 }
 
 clone_aur() {
-  name=$1
-  aur_repo=ssh://aur@aur.archlinux.org/$name
+  aur_repo=$1
 
   tmp=$(mktemp -d)
-  trap 'rm -rf $tmp' EXIT
+  trap 'rm -rf "$tmp"' EXIT
 
   git clone "$aur_repo" "$tmp"
   cd "$tmp"
 }
 
-create_aur_if_necessary() {
-  name=$1
-  aur_repo=ssh://aur@aur.archlinux.org/$name
+create_aur_remote_if_necessary() {
+  aur_repo=$1
 
   if ! git remote -v | grep -Fq aur.archlinux.org; then
     git remote add aur "$aur_repo"
     git fetch aur
     git branch --set-upstream-to=aur/master
+  fi
+}
+
+prepare_repository() {
+  version=$1
+  edit=$2
+  cmd=$3
+
+  if [ -z "$version" ] || [ "$edit" -eq 1 ]; then
+    echo "Launching $cmd in AUR package repo"
+    launch_edit_command "$cmd"
+  fi
+
+  if [ -n "$version" ]; then
+    echo "Setting PKGBUILD version to $version"
+    update_pkgbuild_version "$version"
   fi
 }
 
@@ -34,7 +48,7 @@ update_pkgbuild_version() {
   sed -i "s/^pkgrel=.*$/pkgrel=1/" PKGBUILD
 }
 
-launch_editor() {
+launch_edit_command() {
   cmd=$1
 
   if ! "$cmd"; then
@@ -43,20 +57,24 @@ launch_editor() {
   fi
 }
 
+separate=1
 edit=0
 confirm=1
 cmd=$SHELL
 install=1
 
-while getopts heyC:n opt; do
+AUR=ssh://aur@aur.archlinux.org
+
+while getopts hdeyc:n opt; do
   case "$opt" in
     h)
       usage
       exit 0
       ;;
+    d) separate=0 ;;
     e) edit=1 ;;
     y) confirm=0 ;;
-    C) cmd=$OPTARG ;;
+    c) cmd=$OPTARG ;;
     n) install=0 ;;
     [?])
       usage >&2
@@ -66,31 +84,19 @@ while getopts heyC:n opt; do
 done
 shift $((OPTIND - 1))
 
-name=$1
+name=${1:-$(basename "$PWD")}
 version=$2
 
-if [ -n "$name" ]; then
-  echo "Releasing ${version:-new version} in AUR repository for $name"
-  clone_aur "$name"
+echo "Releasing $name-${version:-unknown}"
 
-  if [ -n "$version" ]; then
-    echo "Setting PKGBUILD version to $version"
-    update_pkgbuild_version "$version"
-  fi
-
-  if [ -z "$version" ] || [ "$edit" -eq 1 ]; then
-    echo "Launching $cmd in AUR package repo"
-    launch_editor "$cmd"
-  fi
+if [ "$separate" -eq 1 ]; then
+  echo "Releasing in separate AUR repository"
+  clone_aur "$AUR/$name"
+  prepare_repository "$version" "$edit" "$cmd"
 else
-  name="$(basename "$PWD")"
-  echo "Releasing this directory as an AUR repository for $name"
-  create_aur_if_necessary "$name"
-
-  if [ "$edit" -eq 1 ]; then
-    echo "Launching $cmd in AUR package repo"
-    launch_editor "$cmd"
-  fi
+  echo "Releasing in this directory"
+  create_aur_remote_if_necessary "$AUR/$name"
+  prepare_repository "$version" "$edit" "$cmd"
 fi
 
 updpkgsums
