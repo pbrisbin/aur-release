@@ -10,7 +10,7 @@ arch=('any')
 url=$_gitroot
 license=('MIT')
 makedepends=('git')
-source=("git://github.com/pbrisbin/$_gitname")
+source=("git+https://github.com/pbrisbin/$_gitname")
 md5sums=('SKIP')
 
 build() {
