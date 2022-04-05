@@ -1,8 +1,6 @@
 NAME = aur-release
 PREFIX ?= /usr/local
 
-VERSION = 1.0.1
-
 .PHONY: test
 test:
 	cram test
@@ -15,12 +13,19 @@ install:
 uninstall:
 	$(RM) $(DESTDIR)$(PREFIX)/bin/aur-release
 
+.PHONY: distcheck
+distcheck:
+	makepkg --clean --install
+	$(RM) -rf aur-release
+	$(RM) -rf aur-release-*.pkg.tar.zst
+
 .PHONY: release
-release:
+release: distcheck
 	./bin/aur-release \
+	  -c 'git checkout master -- PKGBUILD' \
 	  -d \
 	  -n \
-	  aur-release-git v$(VERSION)
+	  aur-release-git
 
 .PHONY: install.local
 install.local: PREFIX=$(HOME)/.local
