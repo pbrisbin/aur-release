@@ -40,11 +40,12 @@ create_aur_remote_if_necessary() {
 
   if ! git remote -v | grep -Fq aur.archlinux.org; then
     git remote add aur "$aur_repo"
-    git fetch aur
-    git checkout -b aur
-    git reset --hard aur/master
-    git branch --set-upstream-to=aur/master
   fi
+
+  git fetch aur
+  git checkout -b aur || git checkout aur
+  git reset --hard aur/master
+  git branch --set-upstream-to=aur/master
 }
 
 prepare_repository() {
@@ -148,5 +149,5 @@ if [ "$separate" -eq 1 ]; then
   git push
 else
   git push aur aur:master
-  git checkout master
+  git checkout -
 fi
